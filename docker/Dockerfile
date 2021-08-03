@@ -22,8 +22,13 @@ RUN wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz
 RUN tar -xvf pbc-0.5.14.tar.gz
 RUN cd pbc-0.5.14 && ./configure && make && make install
 RUN git clone https://github.com/JHUISI/charm.git
-RUN cd charm && git checkout 2.7-dev && ./configure.sh && python setup.py install
-RUN git clone https://github.com/amiller/HoneyBadgerBFT.git
-RUN cd HoneyBadgerBFT && git checkout another-dev
+#python3的執行這一條命令
+RUN cd charm && git checkout dev && ./configure.sh && python setup.py install
+#python2的執行這一條命令 RUN cd charm && git checkout 2.7-dev && ./configure.sh && python setup.py install
+#升級為python3的git倉庫為：https://github.com/jasonclown/HB_PBFT_python3.git
+RUN git clone https://github.com/jasonclown/HB_PBFT_python3.git
+#RUN git clone https://github.com/amiller/HoneyBadgerBFT.git
+#RUN cd HoneyBadgerBFT && git checkout another-dev
+RUN cd HB_PBFT_python3 && git checkout another-dev
 COPY ./start.sh /
 CMD sh /start.sh

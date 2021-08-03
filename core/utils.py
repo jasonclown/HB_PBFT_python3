@@ -281,7 +281,7 @@ def initiateThresholdSig(contents):
 
 def initiateThresholdEnc(contents):
     global encPK, encSKs
-    (l, k, sVK, sVKs, SKs) = pickle.loads(contents)
+    (l, k, sVK, sVKs, SKs) = pickle.loads(contents.encode())
     encPK, encSKs = TPKEPublicKey(l, k, deserialize1(sVK), [deserialize1(sVKp) for sVKp in sVKs]), \
            [TPKEPrivateKey(l, k, deserialize1(sVK), [deserialize1(sVKp) for sVKp in sVKs], \
                            deserialize0(SKp[1]), SKp[0]) for SKp in SKs]
@@ -289,7 +289,7 @@ def initiateThresholdEnc(contents):
 def initiateECDSAKeys(contents):
     global ecdsa_key_list
     ecdsa_key_list = []
-    ecdsa_sec_list = pickle.loads(contents)
+    ecdsa_sec_list = pickle.loads(contents.encode())
     for secret in ecdsa_sec_list:
         k = KEY()
         k.generate(secret)
