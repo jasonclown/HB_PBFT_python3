@@ -274,7 +274,7 @@ def deepDecode(m, msgTypeCounter):
 def initiateThresholdSig(contents):
     global PK, SKs
     # print contents
-    (l, k, sVK, sVKs, SKs) = pickle.loads(contents)
+    (l, k, sVK, sVKs, SKs) = pickle.loads(contents.encode())
     PK, SKs = boldyreva.TBLSPublicKey(l, k, boldyreva.deserialize2(sVK), [boldyreva.deserialize2(sVKp) for sVKp in sVKs]), \
            [boldyreva.TBLSPrivateKey(l, k, boldyreva.deserialize2(sVK), [boldyreva.deserialize2(sVKp) for sVKp in sVKs], \
                            boldyreva.deserialize0(SKp[1]), SKp[0]) for SKp in SKs]
