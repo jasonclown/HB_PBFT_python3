@@ -23,7 +23,7 @@ from ..commoncoin.boldyreva_gipc import initialize as initializeGIPC
 # USE_DEEP_ENCODE = True # It must be encoded
 QUIET_MODE = False  # we are logging the messages
 
-TOR_SOCKSPORT = range(9050, 9150)
+TOR_SOCKSPORT = list(range(9050, 9150))
 
 def goodread(f, length):
     ltmp = length
@@ -58,7 +58,7 @@ def connect_to_channel(hostname, port, party):
         s.setproxy(socks.PROXY_TYPE_SOCKS5, "127.0.0.1", TOR_SOCKSPORT[party], True)
         s.connect((hostname, port))
         retry = False
-      except Exception, e:  # socks.SOCKS5Error:  # still no idea why socks over tor would always generate this error
+      except Exception as e:  # socks.SOCKS5Error:  # still no idea why socks over tor would always generate this error
         retry = True
         gevent.sleep(1)
         s.close()
@@ -182,7 +182,7 @@ def client_test_freenet(N, t, options):
         return _broadcast, _delivery
 
     gevent.sleep(2)
-    print 'servers started'
+    print('servers started')
 
     # while True:
     if True:  # We only test for once
@@ -220,8 +220,8 @@ def client_test_freenet(N, t, options):
         except ACSException:
             gevent.killall(ts)
         except finishTransactionLeap:  ### Manually jump to this level
-            print 'msgCounter', msgCounter
-            print 'msgTypeCounter', msgTypeCounter
+            print('msgCounter', msgCounter)
+            print('msgTypeCounter', msgTypeCounter)
             # message id 0 (duplicated) for signatureCost
             logChannel.put(StopIteration)
             mylog("=====", verboseLevel=-1)
@@ -236,7 +236,7 @@ def client_test_freenet(N, t, options):
                 gevent.sleep(1)
             checkExceptionPerGreenlet()
         finally:
-            print "Concensus Finished"
+            print("Concensus Finished")
 
 import atexit
 
@@ -248,18 +248,18 @@ if USE_PROFILE:
     import GreenletProfiler
 
 def exit():
-    print "Entering atexit()"
-    print 'msgCounter', msgCounter
-    print 'msgTypeCounter', msgTypeCounter
-    nums,lens = zip(*msgTypeCounter)
-    print '    Init      Echo      Val       Aux      Coin     Ready    Share'
-    print '%8d %8d %9d %9d %9d %9d %9d' % nums[1:]
-    print '%8d %8d %9d %9d %9d %9d %9d' % lens[1:]
+    print("Entering atexit()")
+    print('msgCounter', msgCounter)
+    print('msgTypeCounter', msgTypeCounter)
+    nums,lens = list(zip(*msgTypeCounter))
+    print('    Init      Echo      Val       Aux      Coin     Ready    Share')
+    print('%8d %8d %9d %9d %9d %9d %9d' % nums[1:])
+    print('%8d %8d %9d %9d %9d %9d %9d' % lens[1:])
     mylog("Total Message size %d" % totalMessageSize, verboseLevel=-2)
     if OUTPUT_HALF_MSG:
         halfmsgCounter = 0
-        for msgindex in starting_time.keys():
-            if msgindex not in ending_time.keys():
+        for msgindex in list(starting_time.keys()):
+            if msgindex not in list(ending_time.keys()):
                 logChannel.put((msgindex, msgSize[msgindex], msgFrom[msgindex],
                     msgTo[msgindex], starting_time[msgindex], time.time(), '[UNRECEIVED]' + repr(msgContent[msgindex])))
                 halfmsgCounter += 1

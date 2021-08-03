@@ -65,7 +65,7 @@ def random_delay_broadcast_tor(inputs, t):
     # Get the servers ready
     def makeOutput(i):
         def _output(v):
-            print '[%d]' % i, 'output:', v
+            print('[%d]' % i, 'output:', v)
         return _output
 
     # Create the servers
@@ -74,7 +74,7 @@ def random_delay_broadcast_tor(inputs, t):
         _,port = TOR_MAPPINGS[i]
         servers.append(listen_to_channel(port))
     gevent.sleep(2)
-    print 'servers started'
+    print('servers started')
         
     ts = []
     for i in range(N):

@@ -1,6 +1,6 @@
 from shoup import *
 import argparse
-import cPickle
+import pickle
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     players = int(args.players)
     k = int(args.k)
     PK, SKs = dealer(players=players, k=k)
-    print cPickle.dumps((PK, SKs))
+    print(pickle.dumps((PK, SKs)))
 
 if __name__ == '__main__':
     main()

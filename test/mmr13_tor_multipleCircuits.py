@@ -13,7 +13,7 @@ from ..core.broadcasts import bv_broadcast, shared_coin_dummy, binary_consensus,
 
 import socks
 
-TOR_SOCKSPORT = range(9050, 9055)
+TOR_SOCKSPORT = list(range(9050, 9055))
 
 def listen_to_channel(port):
     mylog('Preparing server on %d...' % port)
@@ -61,7 +61,7 @@ def random_delay_broadcast1(inputs, t):
     maxdelay = 0.01
 
     N = len(inputs)
-    buffers = map(lambda _: Queue(1), inputs)
+    buffers = [Queue(1) for _ in inputs]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -74,7 +74,7 @@ def random_delay_broadcast1(inputs, t):
 
     def makeOutput(i):
         def _output(v):
-            print '[%d]' % i, 'output:', v
+            print('[%d]' % i, 'output:', v)
         return _output
         
     ts = []
@@ -97,7 +97,7 @@ def random_delay_broadcast1(inputs, t):
 def random_delay_sharedcoin_dummy(N, t):
     maxdelay = 0.01
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -113,11 +113,11 @@ def random_delay_sharedcoin_dummy(N, t):
         r = 0
         while r < 5:
             gevent.sleep(random.random() * maxdelay)
-            print '[',i,'] at round ', r
+            print('[',i,'] at round ', r)
             b = next(coin)
-            print '[',i,'] bit[%d]:'%r, b
+            print('[',i,'] bit[%d]:'%r, b)
             r += 1
-        print '[',i,'] done'
+        print('[',i,'] done')
         
     ts = []
     for i in range(N):
@@ -136,7 +136,7 @@ def random_delay_sharedcoin_dummy(N, t):
 def random_delay_binary_consensus(N, t):
     maxdelay = 0.01
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -163,16 +163,16 @@ def random_delay_binary_consensus(N, t):
         gevent.joinall(ts)
     except gevent.hub.LoopExit: # Manual fix for early stop
         agreed = ""
-        for key, value in globalState.items():
+        for key, value in list(globalState.items()):
             if globalState[key] != "":
                 agreed = globalState[key]
-        for key,  value in globalState.items():
+        for key,  value in list(globalState.items()):
             if globalState[key] == "":
                 globalState[key] = agreed
             if globalState[key] != agreed:
-                print "Consensus Error"
+                print("Consensus Error")
 
-    print globalState
+    print(globalState)
 
 
 # Run the BV_broadcast protocol with no corruptions and uniform random message delays
@@ -184,7 +184,7 @@ def random_delay_multivalue_consensus(N, t, inputs):
 
     maxdelay = 0.01
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -205,7 +205,7 @@ def random_delay_multivalue_consensus(N, t, inputs):
         _, port = TOR_MAPPINGS[i]
         servers.append(listen_to_channel(port))
     gevent.sleep(2)
-    print 'servers started'
+    print('servers started')
 
 
     ts = []
@@ -222,21 +222,21 @@ def random_delay_multivalue_consensus(N, t, inputs):
         gevent.joinall(ts)
     except gevent.hub.LoopExit: # Manual fix for early stop
         agreed = ""
-        for key, value in globalState.items():
+        for key, value in list(globalState.items()):
             if globalState[key] != "":
                 agreed = globalState[key]
-        for key,  value in globalState.items():
+        for key,  value in list(globalState.items()):
             if globalState[key] == "":
                 globalState[key] = agreed
             if globalState[key] != agreed:
-                print "Consensus Error"
+                print("Consensus Error")
 
 
-    print globalState
+    print(globalState)
 
 if __name__=='__main__':
-    print "[ =========== ]"
-    print "Testing binary consensus..."
-    print "Testing multivalue consensus with different inputs..."
+    print("[ =========== ]")
+    print("Testing binary consensus...")
+    print("Testing multivalue consensus with different inputs...")
     random_delay_multivalue_consensus(5, 1, [random.randint(0, 10) for x in range(5)])
 

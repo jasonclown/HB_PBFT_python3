@@ -7,7 +7,7 @@ import random
 import hashlib
 import gc
 import traceback
-import cPickle as pickle
+import pickle as pickle
 import struct
 from ..ecdsa.ecdsa_ssl import KEY
 import os
@@ -326,7 +326,7 @@ def mylog(*args, **kargs):
     if not 'verboseLevel' in kargs:
         kargs['verboseLevel'] = 0
     if kargs['verboseLevel'] <= verbose:
-        print " ".join([isinstance(arg, str) and arg or repr(arg) for arg in args])
+        print(" ".join([isinstance(arg, str) and arg or repr(arg) for arg in args]))
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -461,7 +461,7 @@ if __name__ == '__main__':
     a.data = 1
 
     def callback(val):
-        print "Callback called with", val
+        print("Callback called with", val)
 
     a.registerSetCallBack(callback)
     a.data = 2

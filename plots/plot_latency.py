@@ -74,18 +74,18 @@ def process(s, N=-1, t=-1):
             info = eval(line.split('timestampB')[1])
             starttime[info[0]] = info[1]
     maxLatency = 0
-    for key, value in endtime.items():
-        print key, starttime[key], value, value - starttime[key]
+    for key, value in list(endtime.items()):
+        print(key, starttime[key], value, value - starttime[key])
         tList.append(value - starttime[key])
         if value - starttime[key] > maxLatency:
             maxLatency = value - starttime[key]
     if N < 0 or t < 0 or 3*t < N:
         # infer N, t
-        N = len(starttime.keys())
+        N = len(list(starttime.keys()))
         t = N/4  # follows the convention that 4t = N
-    print 'N', N, 't', t
+    print('N', N, 't', t)
     if len(endtime) < N - t:
-        print "!!!!!!!!!!!!! Consensus Unfinished"
+        print("!!!!!!!!!!!!! Consensus Unfinished")
         return None
     return sorted(endtime.values())[N-t-1] - min(starttime.values())
     
@@ -95,7 +95,7 @@ def getPointsFromLog(d):
     resY = defaultdict(lambda: [])
     for file in os.listdir(d):
         if file[-4:] == '.log':
-            print 'processing', file
+            print('processing', file)
             N = int(file[:-4].split('_')[0])
             t = int(file[:-4].split('_')[1])
             Tx = int(file[:-4].split('_')[2])

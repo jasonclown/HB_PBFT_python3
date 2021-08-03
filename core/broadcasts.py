@@ -2,12 +2,12 @@
 from gevent import Greenlet
 from gevent.queue import Queue
 from collections import defaultdict
-from utils import dummyCoin, greenletPacker, getKeys
+from .utils import dummyCoin, greenletPacker, getKeys
 from ..commoncoin.boldyreva_gipc import serialize, deserialize1, combine_and_verify
 
 
 verbose = 0
-from utils import makeCallOnce, \
+from .utils import makeCallOnce, \
     makeBroadcastWithTag, makeBroadcastWithTagAndRound, garbageCleaner, loopWrapper
 
 
@@ -165,7 +165,7 @@ def mv84consensus(pid, N, t, vi, broadcast, receive):
                         mv84WaiterLock.put(True)
                 # Fast-Stop: We don't need to wait for the rest (possibly)
                 # malicious parties.
-                if len(mv84v.keys()) >= N - t:
+                if len(list(mv84v.keys())) >= N - t:
                     mv84WaiterLock.put(False)
             elif tag == 'B':
                 mv84p[sender] = m
@@ -175,7 +175,7 @@ def mv84consensus(pid, N, t, vi, broadcast, receive):
                         mv84WaiterLock2.put(True)
                 # Fast-Stop: We don't need to wait for the rest (possibly)
                 # malicious parties.
-                if len(mv84p.keys()) >= N - t:
+                if len(list(mv84p.keys())) >= N - t:
                     mv84WaiterLock2.put(False)
             else:  # Re-route the msg to inner layer
                 reliableBroadcastReceiveQueue.put(
@@ -208,7 +208,7 @@ def checkFinishedWithGlobalState(N):
     :param N: the number of parties
     :return: True if not finished, False if finished
     '''
-    if len(globalState.keys()) < N:
+    if len(list(globalState.keys())) < N:
         return True
     for i in globalState:
         if not globalState[i]:

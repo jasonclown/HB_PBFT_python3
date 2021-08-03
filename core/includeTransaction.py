@@ -2,25 +2,25 @@ __author__ = 'aluex'
 
 from gevent import Greenlet
 from gevent.queue import Queue, Empty
-from bkr_acs import acs
-from utils import mylog, MonitoredInt, callBackWrap, greenletFunction, \
+from .bkr_acs import acs
+from .utils import mylog, MonitoredInt, callBackWrap, greenletFunction, \
     greenletPacker, getEncKeys, Transaction, getECDSAKeys, sha1hash, TR_SIZE
 from collections import defaultdict
 import zfec
 import hashlib
 from ..threshenc.tpke import encrypt, decrypt
-from utils import serializeEnc, deserializeEnc, ENC_SERIALIZED_LENGTH
+from .utils import serializeEnc, deserializeEnc, ENC_SERIALIZED_LENGTH
 import random
 import itertools
 import gevent
 
 def calcSum(dd):
-    return sum([x for _, x in dd.items()])
+    return sum([x for _, x in list(dd.items())])
 
 def calcMajority(dd):
     maxvalue = -1
-    maxkey = dd.values()[0]
-    for key, value in dd.items():
+    maxkey = list(dd.values())[0]
+    for key, value in list(dd.items()):
         if value > maxvalue:
             maxvalue = value
             maxkey = key
@@ -91,7 +91,7 @@ def multiSigBr(pid, N, t, msg, broadcast, receive, outputs, send):
             tmp = someHash((tindex & 1) and br + tmp or tmp + br)
             tindex >>= 1
         if tmp != rootHash:
-            print "Verification failed with", someHash(val), rootHash, branch, tmp == rootHash
+            print("Verification failed with", someHash(val), rootHash, branch, tmp == rootHash)
         return tmp == rootHash
 
     def Listener():
@@ -110,7 +110,7 @@ def multiSigBr(pid, N, t, msg, broadcast, receive, outputs, send):
                         continue
                     if sender in rootHashes:
                         if rootHashes[sender]!= msgBundle[1][1]:
-                            print "Cheating caught, exiting"
+                            print("Cheating caught, exiting")
                             sys.exit(0)
                     else:
                         rootHashes[sender] = msgBundle[1][1]
@@ -128,7 +128,7 @@ def multiSigBr(pid, N, t, msg, broadcast, receive, outputs, send):
                         continue
                     if originBundle[0] in rootHashes:
                         if rootHashes[originBundle[0]]!= originBundle[2]:
-                            print "Cheating caught, exiting"
+                            print("Cheating caught, exiting")
                             sys.exit(0)
                     else:
                         rootHashes[originBundle[0]] = originBundle[2]
@@ -149,15 +149,15 @@ def multiSigBr(pid, N, t, msg, broadcast, receive, outputs, send):
                     reconstDone[msgBundle[1]] = True
                     if msgBundle[1] in rootHashes:
                         if rootHashes[msgBundle[1]]!= msgBundle[2]:
-                            print "Cheating caught, exiting"
+                            print("Cheating caught, exiting")
                             sys.exit(0)
                     else:
                         rootHashes[msgBundle[1]] = msgBundle[2]
-                    if opinions[msgBundle[1]].values()[0] == '':
+                    if list(opinions[msgBundle[1]].values())[0] == '':
                         reconstruction = ['']
                     else:
-                        reconstruction = zfecDecoder.decode(opinions[msgBundle[1]].values()[:Threshold],
-                                opinions[msgBundle[1]].keys()[:Threshold])  # We only take the first [Threshold] fragments
+                        reconstruction = zfecDecoder.decode(list(opinions[msgBundle[1]].values())[:Threshold],
+                                list(opinions[msgBundle[1]].keys())[:Threshold])  # We only take the first [Threshold] fragments
                     rawbuf = ''.join(reconstruction)
                     buf = rawbuf[:-ord(rawbuf[-1])]
                     # Check root hash
@@ -288,7 +288,7 @@ def honestParty(pid, N, t, controlChannel, broadcast, receive, send, B = -1):
     def probe(i):
         if len(encCounter[i]) >= ENC_THRESHOLD and receivedProposals and not locks[i].full() and not doneCombination[i]:  # by == this part only executes once.
             oriM = encPK.combine_shares(deserializeEnc(proposals[i][:ENC_SERIALIZED_LENGTH]),
-                                        dict(itertools.islice(encCounter[i].iteritems(), ENC_THRESHOLD))
+                                        dict(itertools.islice(iter(encCounter[i].items()), ENC_THRESHOLD))
                                         )
             doneCombination[i] = True
             locks[i].put(oriM)
@@ -322,12 +322,12 @@ def honestParty(pid, N, t, controlChannel, broadcast, receive, send, B = -1):
             mylog("timestampB (%d, %lf)" % (pid, time.time()), verboseLevel=-2)
             if len(transactionCache) < B:  # Let's wait for many transactions. : )
                 time.sleep(0.5)
-                print "Not enough transactions", len(transactionCache)
+                print("Not enough transactions", len(transactionCache))
                 continue
 
             oldest_B = transactionCache[:B]
             selected_B = random.sample(oldest_B, min(B/N, len(oldest_B)))
-            print "[%d] proposing %d transactions" % (pid, min(B/N, len(oldest_B)))
+            print("[%d] proposing %d transactions" % (pid, min(B/N, len(oldest_B))))
             aesKey = random._urandom(32)  #
             encrypted_B = encrypt(aesKey, ''.join(selected_B))
             encryptedAESKey = encPK.encrypt(aesKey)

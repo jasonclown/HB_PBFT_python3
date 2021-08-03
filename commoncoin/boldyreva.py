@@ -1,6 +1,7 @@
 from charm.toolbox.pairinggroup import PairingGroup,ZR,G1,G2,GT,pair
 from base64 import encodestring, decodestring
 import random
+from functools import reduce
 
 # An implementation of (unique) threshold signatures based on Gap-Diffie-Hellman 
 # Boldyreva, 2002 https://eprint.iacr.org/2002/118.pdf
@@ -48,20 +49,20 @@ class TBLSPublicKey(object):
     def __getstate__(self):
         d = dict(self.__dict__)
         d['VK'] = serialize(self.VK)
-        d['VKs'] = map(serialize,self.VKs)
+        d['VKs'] = list(map(serialize,self.VKs))
         return d
 
     def __setstate__(self, d):
         self.__dict__ = d
         self.VK = deserialize2(self.VK)
-        self.VKs = map(deserialize2,self.VKs)
-        print "I'm being depickled"
+        self.VKs = list(map(deserialize2,self.VKs))
+        print("I'm being depickled")
 
     def lagrange(self, S, j):
         # Assert S is a subset of range(0,self.l)
         assert len(S) == self.k
         assert type(S) is set
-        assert S.issubset(range(0,self.l))
+        assert S.issubset(list(range(0,self.l)))
         S = sorted(S)
 
         assert j in S
@@ -88,12 +89,12 @@ class TBLSPublicKey(object):
     def combine_shares(self, sigs):
         # sigs: a mapping from idx -> sig
         S = set(sigs.keys())
-        assert S.issubset(range(self.l))
+        assert S.issubset(list(range(self.l)))
 
         mul = lambda a,b: a*b
         res = reduce(mul, 
                      [sig ** self.lagrange(S, j) 
-                      for j,sig in sigs.iteritems()], 1)
+                      for j,sig in sigs.items()], 1)
         return res
 
 
@@ -158,7 +159,7 @@ def test():
     for SK in SKs:
         sigs[SK.i] = SK.sign(h)
 
-    SS = range(PK.l)
+    SS = list(range(PK.l))
     for i in range(64*4):
         random.shuffle(SS)
         S = set(SS[:PK.k])

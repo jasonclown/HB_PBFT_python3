@@ -1,5 +1,5 @@
 import argparse
-import cPickle
+import pickle
 from ..core.utils import encodeTransaction, randomTransaction
 import random
 
@@ -15,9 +15,9 @@ def main():
     else:
         seed = 123
     rnd = random.Random(seed)
-    print "Random transaction generator fingerprints %s" % (hex(rnd.getrandbits(32*8)))
+    print("Random transaction generator fingerprints %s" % (hex(rnd.getrandbits(32*8))))
     transactionSet = set([encodeTransaction(randomTransaction(rnd), randomGenerator=rnd) for trC in range(ntx)])  # we are using the same one
-    print cPickle.dumps(transactionSet)
+    print(pickle.dumps(transactionSet))
 
 if __name__ == '__main__':
     main()

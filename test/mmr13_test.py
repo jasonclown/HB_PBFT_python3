@@ -14,7 +14,7 @@ def random_delay_broadcast1(inputs, t):
     maxdelay = 0.01
 
     N = len(inputs)
-    buffers = map(lambda _: Queue(1), inputs)
+    buffers = [Queue(1) for _ in inputs]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -27,7 +27,7 @@ def random_delay_broadcast1(inputs, t):
 
     def makeOutput(i):
         def _output(v):
-            print '[%d]' % i, 'output:', v
+            print('[%d]' % i, 'output:', v)
         return _output
         
     ts = []
@@ -49,7 +49,7 @@ def random_delay_broadcast1(inputs, t):
 def random_delay_sharedcoin_dummy(N, t):
     maxdelay = 0.01
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
 
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -65,11 +65,11 @@ def random_delay_sharedcoin_dummy(N, t):
         r = 0
         while r < 5:
             gevent.sleep(random.random() * maxdelay)
-            print '[',i,'] at round ', r
+            print('[',i,'] at round ', r)
             b = next(coin)
-            print '[',i,'] bit[%d]:'%r, b
+            print('[',i,'] bit[%d]:'%r, b)
             r += 1
-        print '[',i,'] done'
+        print('[',i,'] done')
         
     ts = []
     for i in range(N):
@@ -88,7 +88,7 @@ def random_delay_sharedcoin_dummy(N, t):
 def random_delay_binary_consensus(N, t, inputs):
     maxdelay = 0.01
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
     random_delay_binary_consensus.msgCount = 0
     # Instantiate the "broadcast" instruction
     def makeBroadcast(i):
@@ -117,11 +117,11 @@ def random_delay_binary_consensus(N, t, inputs):
 
     gevent.joinall(ts)
 
-    for key, item in globalState.items():
+    for key, item in list(globalState.items()):
         if item != globalState[0]:
             mylog(bcolors.FAIL + 'Bad Concensus!' + bcolors.ENDC)
 
-    print globalState
+    print(globalState)
 
 
 # Run the BV_broadcast protocol with no corruptions and uniform random message delays
@@ -130,7 +130,7 @@ def random_delay_multivalue_consensus(N, t, inputs):
 
     msgThreads = []
 
-    buffers = map(lambda _: Queue(1), range(N))
+    buffers = [Queue(1) for _ in range(N)]
 
     random_delay_multivalue_consensus.msgCount = 0
     # Instantiate the "broadcast" instruction
@@ -163,22 +163,22 @@ def random_delay_multivalue_consensus(N, t, inputs):
         gevent.joinall(ts)
     except gevent.hub.LoopExit: # Manual fix for early stop
         agreed = ""
-        for key, value in globalState.items():
+        for key, value in list(globalState.items()):
             if globalState[key] != "":
                 agreed = globalState[key]
-        for key,  value in globalState.items():
+        for key,  value in list(globalState.items()):
             if globalState[key] == "":
                 globalState[key] = agreed
             if globalState[key] != agreed:
-                print "Consensus Error"
+                print("Consensus Error")
 
 
-    print globalState
+    print(globalState)
 
 if __name__=='__main__':
-    print "[ =========== ]"
-    print "Testing binary consensus..."
+    print("[ =========== ]")
+    print("Testing binary consensus...")
     inputs = [random.randint(0, 1) for _ in range(5)]
-    print "Inputs:", inputs
+    print("Inputs:", inputs)
     random_delay_binary_consensus(5, 1, inputs)
 

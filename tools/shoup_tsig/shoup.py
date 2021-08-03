@@ -12,6 +12,7 @@ import millerrabin
 import gmpy2
 import math
 from fractions import gcd
+from functools import reduce
 
 # To generate safe primes: 
 # $ openssl gendh 1024 | openssl dh -noout -text
@@ -20,7 +21,7 @@ from fractions import gcd
 safe_prime_1 = int(''.join("EEAF0AB9 ADB38DD6 9C33F80A FA8FC5E8 60726187 75FF3C0B 9EA2314C 9C256576 D674DF74 96EA81D3 383B4813 D692C6E0 E0D5D8E2 50B98BE4 8E495C1D 6089DAD1 5DC7D7B4 6154D6B6 CE8EF4AD 69B15D49 82559B29 7BCF1885 C529F566 660E57EC 68EDBC3C 05726CC0 2FD4CBF4 976EAA9A FD5138FE 8376435B 9FC61D2F C0EB06E3".split()),16)
 
 from Crypto.Hash import SHA256
-hash = lambda x: long(SHA256.new(x).hexdigest(),16)
+hash = lambda x: int(SHA256.new(x).hexdigest(),16)
 
 safe_prime_2 = int(''.join("""
 00:d7:3a:cf:a2:50:7d:13:45:56:5c:cb:7a:8b:55:
@@ -44,10 +45,10 @@ def egcd(a, b):
 
 def generate_safe_prime(bits):
     while True:
-        print 'trying prime'
+        print('trying prime')
         p_ = millerrabin.generateLargePrime(bits-1)
         if type(p_) is str: 
-            print 'failed to find prime, trying again'
+            print('failed to find prime, trying again')
             continue
         p = 2*p_ + 1
         if millerrabin.is_probable_prime(p):
@@ -139,7 +140,7 @@ class ShoupPublicKey(object):
         # Assert S is a subset of range(0,self.l)
         assert len(S) == self.k
         assert type(S) is set
-        assert S.issubset(range(1,self.l+1))
+        assert S.issubset(list(range(1,self.l+1)))
         S = sorted(S)
 
         assert i not in S
@@ -158,7 +159,7 @@ class ShoupPublicKey(object):
     def combine_shares(self, m, sigs):
         # sigs: a mapping from idx -> sig
         S = set(sigs.keys())
-        assert S.issubset(range(1, self.l+1))
+        assert S.issubset(list(range(1, self.l+1)))
 
         x = hash(m)
         
@@ -170,8 +171,8 @@ class ShoupPublicKey(object):
         #        return r
         def ppow(x, e, n): return gmpy2.powmod(x,e,n)
 
-        w = 1L
-        for i,sig in sigs.iteritems():
+        w = 1
+        for i,sig in sigs.items():
             w = (w * ppow(sig, 2*self.lambdaS(S,0,i), self.n)) % self.n
 
         ep = 4*self.Delta()**2
@@ -213,7 +214,7 @@ def test():
     for SK in SKs:
         sigs[SK.i] = SK.sign('hi')
 
-    SS = range(1,PK.l+1)
+    SS = list(range(1,PK.l+1))
     for i in range(20):
         random.shuffle(SS)
         S = set(SS[:PK.k])

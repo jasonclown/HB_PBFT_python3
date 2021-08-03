@@ -34,7 +34,7 @@ expt = {
 def read_all():
     for N in [8]:
         for B in [1024,2048,4096,8192,16384,32768,65536,131072]:
-            print read_samples(N,B)
+            print(read_samples(N,B))
 
 def read_samples(N,B):
     files = sorted(glob.glob('logs/ec2log_%d_%d_*.log' % (N,B)))
@@ -68,7 +68,7 @@ def plot_throughput():
     f = plt.figure(1, figsize=(7,5));
     plt.clf()
     ax = f.add_subplot(1, 1, 1)
-    for N,(style,entries) in sorted(expt.iteritems()):
+    for N,(style,entries) in sorted(expt.items()):
         t = N/4
         yvals = []
         yvalL = []
@@ -109,7 +109,7 @@ def plot_latency_throughput():
     f = plt.figure(1, figsize=(7,5));
     plt.clf()
     ax = f.add_subplot(1, 1, 1)
-    for N,(style,entries) in sorted(expt.iteritems()):
+    for N,(style,entries) in sorted(expt.items()):
         t = N/4
         yvals = []
         yvalL = []
@@ -151,9 +151,9 @@ def plot_latency_throughput():
 
 # waits for 1471088150.0
 # timestampE (1, 1471088204.750964)
-print "Creating plot_throughput:"
+print("Creating plot_throughput:")
 plot_throughput()
-print "Done."
-print "Creating plot_latency_throughput:"
+print("Done.")
+print("Creating plot_latency_throughput:")
 plot_latency_throughput()
-print "Done."
+print("Done.")

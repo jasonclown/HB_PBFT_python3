@@ -35,12 +35,12 @@ def main(filename):
     # return
     import numpy
 
-    print max(end_times) - min(start_times)
-    print len(msgsize)
-    print sum(msgsize)
-    print sum(timelap) / len(timelap)
-    print numpy.var(timelap)
-    print max(timelap)
+    print(max(end_times) - min(start_times))
+    print(len(msgsize))
+    print(sum(msgsize))
+    print(sum(timelap) / len(timelap))
+    print(numpy.var(timelap))
+    print(max(timelap))
     # return
 
     import matplotlib.pyplot as plt

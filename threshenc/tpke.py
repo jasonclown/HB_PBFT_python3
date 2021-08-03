@@ -4,6 +4,7 @@ import random
 from Crypto.Hash import SHA256
 from Crypto import Random
 from Crypto.Cipher import AES
+from functools import reduce
 
 # Threshold encryption based on Gap-Diffie-Hellman
 # - Only encrypts messages that are 32-byte strings
@@ -67,7 +68,7 @@ class TPKEPublicKey(object):
         # Assert S is a subset of range(0,self.l)
         assert len(S) == self.k
         assert type(S) is set
-        assert S.issubset(range(0,self.l))
+        assert S.issubset(list(range(0,self.l)))
         S = sorted(S)
 
         assert j in S
@@ -94,22 +95,25 @@ class TPKEPublicKey(object):
         C = (U, V, W)
         return C
 
-    def verify_ciphertext(self, (U, V, W)):
+    def verify_ciphertext(self, xxx_todo_changeme):
         # Check correctness of ciphertext
+        (U, V, W) = xxx_todo_changeme
         H = hashH(U, V)
         assert pair(g1, W) == pair(U, H)
         return True
 
-    def verify_share(self, i, U_i, (U,V,W)):
+    def verify_share(self, i, U_i, xxx_todo_changeme1):
+        (U,V,W) = xxx_todo_changeme1
         assert 0 <= i < self.l
         Y_i = self.VKs[i]
         assert pair(U_i, g2) == pair(U, Y_i)
         return True
 
-    def combine_shares(self, (U,V,W), shares):
+    def combine_shares(self, xxx_todo_changeme2, shares):
         # sigs: a mapping from idx -> sig
+        (U,V,W) = xxx_todo_changeme2
         S = set(shares.keys())
-        assert S.issubset(range(self.l))
+        assert S.issubset(list(range(self.l)))
 
         # ASSUMPTION
         # assert self.verify_ciphertext((U,V,W))
@@ -117,7 +121,7 @@ class TPKEPublicKey(object):
         mul = lambda a,b: a*b
         res = reduce(mul, 
                      [share ** self.lagrange(S, j)
-                      for j,share in shares.iteritems()], ONE)
+                      for j,share in shares.items()], ONE)
         return xor(hashG(res), V)
 
 
@@ -128,7 +132,7 @@ class TPKEPrivateKey(TPKEPublicKey):
         self.i = i
         self.SK = SK
 
-    def decrypt_share(self, (U, V, W)):
+    def decrypt_share(self, xxx_todo_changeme3):
         # ASSUMPTION
         # assert self.verify_ciphertext((U,V,W))
 
@@ -136,6 +140,7 @@ class TPKEPrivateKey(TPKEPublicKey):
         # print U, V, W
         # print U
         # print self.SK
+        (U, V, W) = xxx_todo_changeme3
         U_i = U ** self.SK
 
         return U_i
@@ -193,7 +198,7 @@ def test():
     for i,share in enumerate(shares):
         assert PK.verify_share(i, share, C)
 
-    SS = range(PK.l)
+    SS = list(range(PK.l))
     for i in range(1):
         random.shuffle(SS)
         S = set(SS[:PK.k])

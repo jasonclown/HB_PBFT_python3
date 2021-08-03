@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 from fabric.api import *
 from fabric.operations import put, get
 from fabric.contrib.console import confirm
@@ -34,7 +34,7 @@ def checkLatency():
         # print repr(res)
         lat = scanf.sscanf(res, '%d bytes from %s icmp_seq=%d ttl=%d time=%f ms')[-1]
         resDict.append(lat)
-    print ' '.join([env.host_string, str(sorted(resDict)[int(math.ceil(totLen * 0.75))]), str(sum(resDict) / len(resDict))])
+    print(' '.join([env.host_string, str(sorted(resDict)[int(math.ceil(totLen * 0.75))]), str(sum(resDict) / len(resDict))]))
 
 @parallel
 def ping():
@@ -111,13 +111,13 @@ def fetchLogs():
 def syncKeys():
     put('./*.keys', '~/')
 
-import SocketServer, time
+import socketserver, time
 start_time = 0
 sync_counter = 0
 N = 1
 t = 1
 
-class MyTCPHandler(SocketServer.BaseRequestHandler):
+class MyTCPHandler(socketserver.BaseRequestHandler):
     """
     The RequestHandler class for our server.
 
@@ -128,11 +128,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     def handle(self):
         # self.request is the TCP socket connected to the client
         self.data = self.rfile.readline().strip()
-        print "%s finishes at %lf" % (self.client_address[0], time.time() - start_time)
-        print self.data
+        print("%s finishes at %lf" % (self.client_address[0], time.time() - start_time))
+        print(self.data)
         sync_counter += 1
         if sync_counter >= N - t:
-            print "finished at %lf" % (time.time() - start_time)
+            print("finished at %lf" % (time.time() - start_time))
 
 def runServer():   # deprecated
     global start_time, sync_counter, N, t
@@ -140,7 +140,7 @@ def runServer():   # deprecated
     t = int(tstr)
     start_time = time.time()
     sync_counter = 0
-    server = SocketServer.TCPServer(('0.0.0.0', 51234), MyTCPHandler)
+    server = socketserver.TCPServer(('0.0.0.0', 51234), MyTCPHandler)
     server.serve_forever()
 
 @parallel
@@ -160,7 +160,7 @@ def runProtocol(N_, t_, B_, timespan_, tx='tx'):
     t = int(t_)
     B = int(B_) * N   # now we don't have to calculate them anymore
     timespan = int(timespan_)
-    print N, t, B, timespan
+    print(N, t, B, timespan)
     with shell_env(LIBRARY_PATH='/usr/local/lib', LD_LIBRARY_PATH='/usr/local/lib'):
         run('python -m HoneyBadgerBFT.test.honest_party_test_EC2 -k'
             ' thsig%d_%d.keys -e ecdsa.keys -a %d -b %d -n %d -t %d -c thenc%d_%d.keys' % (N, t, timespan, B, N, t, N, t))
