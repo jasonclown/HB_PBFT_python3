@@ -274,14 +274,14 @@ def deepDecode(m, msgTypeCounter):
 def initiateThresholdSig(contents):
     global PK, SKs
     # print contents
-    (l, k, sVK, sVKs, SKs) = pickle.loads(contents.encode())
+    (l, k, sVK, sVKs, SKs) = pickle.loads(contents)
     PK, SKs = boldyreva.TBLSPublicKey(l, k, boldyreva.deserialize2(sVK), [boldyreva.deserialize2(sVKp) for sVKp in sVKs]), \
            [boldyreva.TBLSPrivateKey(l, k, boldyreva.deserialize2(sVK), [boldyreva.deserialize2(sVKp) for sVKp in sVKs], \
                            boldyreva.deserialize0(SKp[1]), SKp[0]) for SKp in SKs]
 
 def initiateThresholdEnc(contents):
     global encPK, encSKs
-    (l, k, sVK, sVKs, SKs) = pickle.loads(contents.encode())
+    (l, k, sVK, sVKs, SKs) = pickle.loads(contents)
     encPK, encSKs = TPKEPublicKey(l, k, deserialize1(sVK), [deserialize1(sVKp) for sVKp in sVKs]), \
            [TPKEPrivateKey(l, k, deserialize1(sVK), [deserialize1(sVKp) for sVKp in sVKs], \
                            deserialize0(SKp[1]), SKp[0]) for SKp in SKs]
@@ -289,7 +289,7 @@ def initiateThresholdEnc(contents):
 def initiateECDSAKeys(contents):
     global ecdsa_key_list
     ecdsa_key_list = []
-    ecdsa_sec_list = pickle.loads(contents.encode())
+    ecdsa_sec_list = pickle.loads(contents)
     for secret in ecdsa_sec_list:
         k = KEY()
         k.generate(secret)
